@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Refratários</title>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --light-green: #4caf50;
+            --input-green: #00e676;
+            --warning-yellow: #ffeb3b;
+            --orange-bg: #ef6c00;
+            --orange-light: #ffe0b2;
+            --bg-gray: #f5f5f5;
+            --border-color: #bdbdbd;
+            --alert-red: #d32f2f;
+            
+            /* Mantendo as cores de fundo dos cartões originais e sólidas */
+            --bg-card-principal: #f1f8e9; 
+            --bg-card-incorreto: #fafafa; 
+            --bg-card-tabela: #e3f2fd;    
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            position: relative;
+            background-color: var(--bg-gray);
+            padding: 15px;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Camada dedicada estritamente para renderizar a imagem de fundo */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('PRM11001 Imagem.jpg');
+            background-repeat: no-repeat;
+            background-position: center 60%;
+            background-size: 50%; /* Imagem redimensionada para 50% da largura da tela */
+            opacity: 0.35; 
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff; /* Fundo branco totalmente sólido como o original */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .alert-box {
+            background-color: var(--warning-yellow);
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Grid Layout para Desktop */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        @media (min-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1.2fr 0.8fr;
+            }
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            height: 100%;
+        }
+
+        .card-principal {
+            background-color: var(--bg-card-principal);
+        }
+
+        .card-incorreto {
+            background-color: var(--bg-card-incorreto);
+            border-color: var(--orange-bg);
+        }
+
+        .card-tabela {
+            background-color: var(--bg-card-tabela);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 5px;
+        }
+
+        /* Formatações de Inputs e Resultados */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .input-editable-green {
+            background-color: var(--input-green);
+            color: black;
+        }
+
+        input:disabled {
+            background-color: #e0e0e0;
+            color: #757575;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            width: 120px;
+            padding: 8px;
+            background-color: #e0e0e0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background-color: #ff9800;
+            color: white;
+            font-size: 18px;
+        }
+
+        /* Tabelas */
+        .table-responsive {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 5px 4px;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .active-row {
+            background-color: #d1c4e9 !important; 
+            font-weight: bold;
+        }
+
+        /* Notas e Rodapé */
+        .notes {
+            background-color: #fffde7;
+            padding: 15px;
+            border-left: 5px solid var(--warning-yellow);
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .notes h4 {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .notes ol {
+            padding-left: 20px;
+        }
+
+        .footer-obs {
+            background-color: var(--warning-yellow);
+            text-align: center;
+            font-weight: bold;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* Seção do Botão de Confirmação */
+        .taxa-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-alert {
+            background-color: var(--alert-red);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-alert:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Créditos Finais Adilio */
+        .credits {
+            text-align: center;
+            font-size: 11px;
+            font-style: italic;
+            color: #757575;
+            margin-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">Cálculo de Refratários</div>
+    <div class="alert-box">ATENÇÃO: Altere somente os campos em VERDE brilhante!</div>
+
+    <div class="main-grid">
+        <div class="left-column">
+            <div class="card card-principal">
+                <div class="card-title">Cálculo Principal</div>
+                
+                <div class="row">
+                    <label>Quantidade de Anos em Atraso (Máx 12):</label>
+                    <input type="number" id="anosAtraso" class="input-editable-green" value="1" min="1" max="12" oninput="calcular()">
+                </div>
+
+                <div class="row">
+                    <label>Quantidade de Fatores:</label>
+                    <div id="resFatores" class="result-box">1</div>
+                </div>
+
+                <div class="row">
+                    <label style="color: var(--orange-bg); font-size: 16px;">Valor a Ser Cobrado:</label>
+                    <div id="resValorCobrado" class="result-box highlight-box">R$ 6,56</div>
+                </div>
+            </div>
+
+            <div class="card card-incorreto">
+                <div class="card-title" style="color: var(--orange-bg); border-bottom-color: var(--orange-bg);">
+                    Caso o Cidadão tenha pago incorreto
+                </div>
+
+                <div class="row">
+                    <label>Valor Já Pago pelo Cidadão (R$):</label>
+                    <input type="number" id="valorPago" class="input-editable-green" value="0.00" step="0.01" oninput="calcular()">
+                </div>
+
+                <div class="row">
+                    <label>Valor Devido (R$):</label>
+                    <div id="resValorDevido" class="result-box">R$ 6,56</div>
+                </div>
+
+                <div class="row">
+                    <label>Diferença a ser Paga:</label>
+                    <div id="resDiferenca" class="result-box" style="background-color: var(--orange-light); color: var(--orange-bg);">R$ 6,56</div>
+                </div>
+
+                <div class="row">
+                    <label>Quantidade de Fatores de Diferença:</label>
+                    <div id="resFatoresDiferenca" class="result-box" style="background-color: var(--orange-light); color: var(--orange-bg);">1</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card card-tabela">
+                <div class="card-title" style="text-align: center; font-size: 13px;">REGULARIZAÇÃO DE REFRATÁRIO DE SELEÇÃO</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>QTD VEZES (ANOS)</th>
+                                <th>ARTIGOS</th>
+                                <th>FATOR</th>
+                                <th style="background-color: #2e7d32; color: white;">MULTA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabela">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="border: 1px dashed var(--border-color); background-color: #fff; margin-top: 15px;">
+        <div class="row" style="margin-bottom: 0;">
+            <label style="color: #555;">Taxa Básica Geral (Valor do Fator R$):</label>
+            <div class="taxa-container">
+                <button type="button" class="btn-alert" onclick="confirmarAlteracao()">Alterar Taxa</button>
+                <input type="number" id="taxaBasica" value="6.56" step="0.01" oninput="calcular()" disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="notes">
+        <h4>Observações para Regularizar Refratários:</h4>
+        <ol>
+            <li>Verificar a quantos anos o cidadão está como refratário;</li>
+            <li>Verificar se houve alguma regularização desse cidadão anteriormente;</li>
+            <li>Verificar qual o valor da multa a ser paga pelo cidadão;</li>
+            <li><strong>CRIAR UM PROCESSO como emissão de CDI;</strong></li>
+            <li>COBRA A MULTA DENTRO DO PROCESSO CRIADO;</li>
+            <li>NÃO Gerar o CAM (Será gerado pelo PRM após auditoria no Processo)</li>
+            <li><a href="#" style="color: blue;">Envia via formulário para o PRM como "Regularização de Refratário".</a></li>
+        </ol>
+    </div>
+
+    <div class="footer-obs">
+        Obs.: O ANO DE 2025 DEVE SER COBRADO.
+    </div>
+
+    <div class="credits">
+        Calculadora desenvolvida pelo ST Adilio.
+    </div>
+</div>
+
+<script>
+    function confirmarAlteracao() {
+        let resposta = confirm("Você tem certeza que deseja alterar o valor da taxa básica!");
+        
+        if (resposta) {
+            let campoTaxa = document.getElementById('taxaBasica');
+            campoTaxa.disabled = false;
+            campoTaxa.classList.add('input-editable-green');
+            campoTaxa.focus();
+        }
+    }
+
+    function calcular() {
+        let taxaBasica = parseFloat(document.getElementById('taxaBasica').value) || 0;
+        let anos = parseInt(document.getElementById('anosAtraso').value) || 1;
+        let valorPago = parseFloat(document.getElementById('valorPago').value) || 0;
+
+        if (anos > 12) {
+            anos = 12;
+            document.getElementById('anosAtraso').value = 12;
+        }
+        if (anos < 1) {
+            anos = 1;
+            document.getElementById('anosAtraso').value = 1;
+        }
+
+        let fatores = 1;
+        if (anos > 1) {
+            fatores = 1 + (anos - 1) * 5;
+        }
+
+        let valorCobrado = fatores * taxaBasica;
+
+        document.getElementById('resFatores').innerText = fatores;
+        document.getElementById('resValorCobrado').innerText = "R$ " + valorCobrado.toFixed(2).replace('.', ',');
+
+        let valorDevido = valorCobrado;
+        let diferenca = valorDevido - valorPago;
+        if (diferenca < 0) diferenca = 0;
+
+        let fatoresPagos = valorPago / taxaBasica;
+        let fatoresDiferenca = fatores - fatoresPagos;
+        if (fatoresDiferenca < 0) fatoresDiferenca = 0;
+
+        document.getElementById('resValorDevido').innerText = "R$ " + valorDevido.toFixed(2).replace('.', ',');
+        document.getElementById('resDiferenca').innerText = "R$ " + diferenca.toFixed(2).replace('.', ',');
+        document.getElementById('resFatoresDiferenca').innerText = Number(fatoresDiferenca.toFixed(2)).toString().replace('.', ',');
+
+        desenharTabela(taxaBasica, anos);
+    }
+
+    function drawingArtigo(linha) {
+        if (linha === 1) return "Art. 176/2";
+        if (linha === 2) return "Art. 178/1";
+        return "Art. 178/2";
+    }
+
+    function desenharTabela(taxa, anoAtivo) {
+        let html = "";
+        for (let i = 1; i <= 12; i++) {
+            let f = (i === 1) ? 1 : 1 + (i - 1) * 5;
+            let multa = f * taxa;
+            let artigo = drawingArtigo(i);
+            
+            let classeAtiva = (i === anoAtivo) ? "class='active-row'" : "";
+
+            html += `<tr ${classeAtiva}>
+                <td>${i}</td>
+                <td>${artigo}</td>
+                <td>${f}</td>
+                <td>R$ ${multa.toFixed(2).replace('.', ',')}</td>
+            </tr>`;
+        }
+        document.getElementById('corpoTabela').innerHTML = html;
+    }
+
+    calcular();
+</script>
+
+</body>
+</html>
