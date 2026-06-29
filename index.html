@@ -11,15 +11,15 @@
             --input-green: #00e676;
             --warning-yellow: #ffeb3b;
             --orange-bg: #ef6c00;
-            --orange-light: #ffe0b2;
+            --orange-light: rgba(255, 224, 178, 0.5);
             --bg-gray: #f5f5f5;
             --border-color: #bdbdbd;
             --alert-red: #d32f2f;
             
-            /* Mantendo as cores de fundo dos cartões originais e sólidas */
-            --bg-card-principal: #f1f8e9; 
-            --bg-card-incorreto: #fafafa; 
-            --bg-card-tabela: #e3f2fd;    
+            /* Fundos dos cartões MUITO mais transparentes (30% a 45% de opacidade) */
+            --bg-card-principal: rgba(241, 248, 233, 0.45); 
+            --bg-card-incorreto: rgba(250, 250, 250, 0.35); 
+            --bg-card-tabela: rgba(223, 242, 253, 0.45);    
         }
 
         * {
@@ -37,7 +37,7 @@
             min-height: 100vh;
         }
 
-        /* Camada dedicada estritamente para renderizar a imagem de fundo */
+        /* Camada dedicada para renderizar a imagem de fundo */
         body::before {
             content: "";
             position: fixed;
@@ -49,15 +49,19 @@
             background-image: url('PRM11001 Imagem.jpg');
             background-repeat: no-repeat;
             background-position: center 60%;
-            background-size: 50%; /* Imagem redimensionada para 50% da largura da tela */
-            opacity: 0.35; 
+            background-size: 50%; 
+            opacity: 0.6; /* Aumentada a força da imagem de fundo para destacar mais */
             pointer-events: none;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: #fff; /* Fundo branco totalmente sólido como o original */
+            /* Alta transparência no container principal (45% de opacidade branca) */
+            background: rgba(255, 255, 255, 0.45);
+            /* Efeito de vidro fosco sutil */
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -78,7 +82,7 @@
         }
 
         .alert-box {
-            background-color: var(--warning-yellow);
+            background-color: rgba(255, 235, 59, 0.8);
             padding: 10px;
             text-align: center;
             font-weight: bold;
@@ -170,15 +174,15 @@
         }
 
         input:disabled {
-            background-color: #e0e0e0;
-            color: #757575;
+            background-color: rgba(224, 224, 224, 0.5);
+            color: #222;
             cursor: not-allowed;
         }
 
         .result-box {
             width: 120px;
             padding: 8px;
-            background-color: #e0e0e0;
+            background-color: rgba(224, 224, 224, 0.5);
             border: 1px solid var(--border-color);
             border-radius: 4px;
             text-align: center;
@@ -204,7 +208,7 @@
             font-size: 12px;
             text-align: center;
             margin-top: 5px;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
         th, td {
@@ -213,18 +217,18 @@
         }
 
         th {
-            background-color: #f0f0f0;
+            background-color: rgba(240, 240, 240, 0.6);
             font-weight: bold;
         }
 
         .active-row {
-            background-color: #d1c4e9 !important; 
+            background-color: rgba(209, 196, 233, 0.6) !important; 
             font-weight: bold;
         }
 
         /* Notas e Rodapé */
         .notes {
-            background-color: #fffde7;
+            background-color: rgba(255, 253, 231, 0.5);
             padding: 15px;
             border-left: 5px solid var(--warning-yellow);
             margin-top: 20px;
@@ -235,7 +239,7 @@
 
         .notes h4 {
             margin-bottom: 8px;
-            color: #555;
+            color: #333;
         }
 
         .notes ol {
@@ -243,7 +247,7 @@
         }
 
         .footer-obs {
-            background-color: var(--warning-yellow);
+            background-color: rgba(255, 235, 59, 0.7);
             text-align: center;
             font-weight: bold;
             padding: 8px;
@@ -280,7 +284,7 @@
             text-align: center;
             font-size: 11px;
             font-style: italic;
-            color: #757575;
+            color: #333;
             margin-top: 15px;
             border-top: 1px dashed var(--border-color);
             padding-top: 8px;
@@ -362,9 +366,9 @@
         </div>
     </div>
 
-    <div class="card" style="border: 1px dashed var(--border-color); background-color: #fff; margin-top: 15px;">
+    <div class="card" style="border: 1px dashed var(--border-color); background-color: rgba(255, 255, 255, 0.3); margin-top: 15px;">
         <div class="row" style="margin-bottom: 0;">
-            <label style="color: #555;">Taxa Básica Geral (Valor do Fator R$):</label>
+            <label style="color: #333;">Taxa Básica Geral (Valor do Fator R$):</label>
             <div class="taxa-container">
                 <button type="button" class="btn-alert" onclick="confirmarAlteracao()">Alterar Taxa</button>
                 <input type="number" id="taxaBasica" value="6.56" step="0.01" oninput="calcular()" disabled>
