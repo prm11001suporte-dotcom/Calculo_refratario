@@ -256,29 +256,6 @@
             font-size: 13px;
         }
 
-        /* Seção do Botão de Confirmação */
-        .taxa-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-alert {
-            background-color: var(--alert-red);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .btn-alert:hover {
-            background-color: #b71c1c;
-        }
-
         /* Créditos Finais Adilio */
         .credits {
             text-align: center;
@@ -314,7 +291,7 @@
 
                 <div class="row">
                     <label style="color: var(--orange-bg); font-size: 16px;">Valor a Ser Cobrado:</label>
-                    <div id="resValorCobrado" class="result-box highlight-box">R$ 6,56</div>
+                    <div id="resValorCobrado" class="result-box highlight-box">R$ 6,69</div>
                 </div>
             </div>
 
@@ -330,12 +307,12 @@
 
                 <div class="row">
                     <label>Valor Devido (R$):</label>
-                    <div id="resValorDevido" class="result-box">R$ 6,56</div>
+                    <div id="resValorDevido" class="result-box">R$ 6,69</div>
                 </div>
 
                 <div class="row">
                     <label>Diferença a ser Paga:</label>
-                    <div id="resDiferenca" class="result-box" style="background-color: var(--orange-light); color: var(--orange-bg);">R$ 6,56</div>
+                    <div id="resDiferenca" class="result-box" style="background-color: var(--orange-light); color: var(--orange-bg);">R$ 6,69</div>
                 </div>
 
                 <div class="row">
@@ -359,19 +336,9 @@
                             </tr>
                         </thead>
                         <tbody id="corpoTabela">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" style="border: 1px dashed var(--border-color); background-color: rgba(255, 255, 255, 0.3); margin-top: 15px;">
-        <div class="row" style="margin-bottom: 0;">
-            <label style="color: #333;">Taxa Básica Geral (Valor do Fator R$):</label>
-            <div class="taxa-container">
-                <button type="button" class="btn-alert" onclick="confirmarAlteracao()">Alterar Taxa</button>
-                <input type="number" id="taxaBasica" value="6.56" step="0.01" oninput="calcular()" disabled>
             </div>
         </div>
     </div>
@@ -399,19 +366,13 @@
 </div>
 
 <script>
-    function confirmarAlteracao() {
-        let resposta = confirm("Você tem certeza que deseja alterar o valor da taxa básica!");
-        
-        if (resposta) {
-            let campoTaxa = document.getElementById('taxaBasica');
-            campoTaxa.disabled = false;
-            campoTaxa.classList.add('input-editable-green');
-            campoTaxa.focus();
-        }
-    }
+    // ==========================================
+    // MODIFIQUE APENAS ESTA LINHA ABAIXO:
+    // ==========================================
+    const TAXA_BASICA_GERAL = 6.69;
 
     function calcular() {
-        let taxaBasica = parseFloat(document.getElementById('taxaBasica').value) || 0;
+        let taxaBasica = TAXA_BASICA_GERAL;
         let anos = parseInt(document.getElementById('anosAtraso').value) || 1;
         let valorPago = parseFloat(document.getElementById('valorPago').value) || 0;
 
@@ -474,6 +435,7 @@
         document.getElementById('corpoTabela').innerHTML = html;
     }
 
+    // Inicializa o cálculo ao carregar a página
     calcular();
 </script>
 
